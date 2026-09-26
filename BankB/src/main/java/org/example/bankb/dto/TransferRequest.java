@@ -11,6 +11,8 @@ import java.math.BigDecimal;
 @Data
 public class TransferRequest {
 
+    private String traceId;
+
     @Size(min = 16, max = 16, message = "شماره کارت باید دقیقاً 16 رقم باشد")
     @Pattern(regexp = "\\d{16}", message = "شماره کارت فقط باید شامل اعداد باشد")
     private String sourceCardNumber;

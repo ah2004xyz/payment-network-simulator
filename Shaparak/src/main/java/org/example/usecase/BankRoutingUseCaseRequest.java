@@ -13,6 +13,8 @@ import java.math.BigDecimal;
 @NoArgsConstructor
 public class BankRoutingUseCaseRequest {
 
+    private String traceId;
+
     @Pattern(regexp = "\\d{16}", message = "شماره کارت باید ۱۶ رقم عددی باشد")
 
     private String sourceCardNumber;

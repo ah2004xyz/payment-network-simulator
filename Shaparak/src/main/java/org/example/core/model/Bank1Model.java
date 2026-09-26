@@ -9,6 +9,8 @@ import java.math.BigDecimal;
 @Accessors(chain = true)
 public class Bank1Model implements BankModel{
 
+    private String traceId;
+
     //validation numeric-16digit-ask ai
     private String sourceCardNumber;
     private String targetAccountNumber;

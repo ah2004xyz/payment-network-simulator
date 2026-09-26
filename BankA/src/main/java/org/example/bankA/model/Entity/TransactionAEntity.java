@@ -18,6 +18,9 @@ import java.time.LocalDateTime;
 @Accessors(chain = true)
 public class TransactionAEntity {
 
+    @Column(name = "trace_id", length = 64)
+    private String traceId;
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "Transaction_id_A")

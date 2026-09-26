@@ -25,6 +25,9 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 public class BankBTransaction {
 
+    @Column(name = "trace_id", length = 64)
+    private String traceId;
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;

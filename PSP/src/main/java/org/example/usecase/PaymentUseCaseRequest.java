@@ -24,5 +24,7 @@ public class PaymentUseCaseRequest {
     @Positive(message = "مقدار باید مثبت باشد")
     private BigDecimal amount;
 
+    private String traceId;
+
 
 }

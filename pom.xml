@@ -14,12 +14,13 @@
     <version>1.0.0-SNAPSHOT</version>
     <packaging>pom</packaging>
     <name>Payment Network Simulator</name>
-    <description>Three-service payment flow simulator for PSP, Shaparak, and bank systems</description>
+    <description>Payment flow simulator with PSP, Shaparak, two banks, and a developer console</description>
     <modules>
         <module>BankA</module>
         <module>BankB</module>
         <module>Shaparak</module>
         <module>PSP</module>
+        <module>Console</module>
     </modules>
     <properties>
         <java.version>17</java.version>

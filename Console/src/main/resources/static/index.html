@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#101317">
+  <title>POS Purchase / Developer Console</title>
+  <link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+  <div class="shell">
+    <aside class="sidebar">
+      <div class="brand"><div class="brand-mark">P<span>·</span></div><div><strong>POS Purchase</strong><small>Developer console</small></div></div>
+      <div class="nav-caption">WORKSPACE</div>
+      <nav aria-label="Primary navigation">
+        <button class="nav-link active" data-view="overview"><span class="nav-icon">◫</span> Overview</button>
+        <button class="nav-link" data-view="scenarios"><span class="nav-icon">▣</span> Scenarios</button>
+        <button class="nav-link" data-view="playground"><span class="nav-icon">⌘</span> Playground</button>
+        <button class="nav-link" data-view="activity"><span class="nav-icon">≡</span> Transactions</button>
+        <button class="nav-link" data-view="logs"><span class="nav-icon">▤</span> Activity logs</button>
+        <button class="nav-link" data-view="system"><span class="nav-icon">◇</span> System</button>
+      </nav>
+      <div class="sidebar-bottom"><span class="live-dot" id="sidebar-dot"></span><span id="sidebar-status">Checking runtime…</span><small>Local development · :8090</small></div>
+    </aside>
+    <main class="main">
+      <header class="topbar"><div class="breadcrumb"><span>Workspace</span><span class="slash">/</span><strong id="breadcrumb-view">Overview</strong></div><div class="top-actions"><span id="last-check" class="muted">Checking services…</span><button class="icon-button" id="refresh-all" title="Refresh runtime and activity" aria-label="Refresh">↻</button></div></header>
+      <div class="content">
+        <section class="view active" id="view-overview">
+          <div class="page-heading"><div><div class="eyebrow">PAYMENT NETWORK SIMULATOR</div><h1>Follow a payment,<br><em>from request to record.</em></h1><p>Run real purchase requests, inspect what each service persisted, and see where the flow stopped.</p></div><button class="primary-button" data-go="scenarios">Run a scenario <span>↗</span></button></div>
+          <div class="section-label"><span>RUNTIME SNAPSHOT</span><span id="snapshot-time">—</span></div>
+          <div class="status-grid" id="overview-status"><div class="skeleton"></div><div class="skeleton"></div><div class="skeleton"></div><div class="skeleton"></div></div>
+          <div class="overview-columns"><div class="panel flow-panel"><div class="panel-heading"><div><span class="eyebrow">THE PURCHASE PATH</span><h2>How it moves</h2></div><span class="subtle">Live architecture</span></div><div class="flow-list"><div class="flow-step"><span>01</span><div><strong>PSP</strong><small>Validates merchant & request; stores purchase</small></div><i>POST :8084</i></div><div class="flow-step"><span>02</span><div><strong>RabbitMQ</strong><small>Synchronous request / reply to Shaparak</small></div><i>Direct exchange</i></div><div class="flow-step"><span>03</span><div><strong>Shaparak</strong><small>Routes by card BIN; stores routing data</small></div><i>Consumer :8082</i></div><div class="flow-step"><span>04</span><div><strong>Bank A or B</strong><small>Transfers funds and records transaction</small></div><i>REST + MySQL</i></div></div></div><div class="panel recent-panel"><div class="panel-heading"><div><span class="eyebrow">THIS SESSION</span><h2>Recent runs</h2></div><button class="text-button" data-go="activity">View all →</button></div><div id="overview-recent" class="recent-list"><div class="empty">No requests yet. Start with a scenario.</div></div></div></div>
+          <div class="notice"><span>ℹ</span><div><strong>Before your first purchase</strong><p>Start the four backend services and the Docker infrastructure. Seed a merchant and matching bank accounts; the sample values are editable in Scenarios.</p></div><a href="https://localhost.invalid" id="docs-link" hidden>Docs</a></div>
+        </section>
+
+        <section class="view" id="view-scenarios"><div class="page-heading compact"><div><div class="eyebrow">GUIDED TESTING</div><h1>Scenarios</h1><p>Real code paths, ready to run. Review or edit the JSON before sending.</p></div></div><div class="scenario-grid" id="scenario-grid"></div><div class="panel editor-panel"><div class="panel-heading"><div><span class="eyebrow">REQUEST EDITOR</span><h2 id="scenario-title">Select a scenario</h2></div><span class="endpoint-tag" id="scenario-endpoint">POST /payment/purchase</span></div><p class="editor-hint" id="scenario-hint">Sample account and merchant values must exist in your local databases for a successful purchase.</p><label class="field-label" for="scenario-json">Request body · JSON</label><textarea id="scenario-json" class="code-editor" spellcheck="false" aria-label="Scenario request JSON"></textarea><div class="editor-actions"><span class="muted">A trace ID is attached automatically.</span><button class="primary-button" id="run-scenario">Run scenario <span>↗</span></button></div></div><div id="scenario-result"></div></section>
+
+        <section class="view" id="view-playground"><div class="page-heading compact"><div><div class="eyebrow">API WORKBENCH</div><h1>Playground</h1><p>Send a custom request to one of the project's three write endpoints.</p></div></div><div class="panel editor-panel"><div class="endpoint-row"><span class="method-tag">POST</span><select id="playground-service" aria-label="Endpoint"><option value="psp">/payment/purchase · PSP</option><option value="bankA">/bank/bank1 · Bank A</option><option value="bankB">/bank/bank2 · Bank B</option></select></div><div class="request-meta"><span>Content-Type: application/json</span><span>Trace-ID: generated per run</span></div><label class="field-label" for="playground-json">Request body · JSON</label><textarea id="playground-json" class="code-editor tall" spellcheck="false" aria-label="Playground request JSON"></textarea><div class="editor-actions"><span class="muted">Direct bank calls bypass PSP and RabbitMQ.</span><button class="primary-button" id="run-playground">Send request <span>↗</span></button></div></div><div id="playground-result"></div></section>
+
+        <section class="view" id="view-activity"><div class="page-heading compact"><div><div class="eyebrow">TRACE & PERSISTENCE</div><h1>Transactions</h1><p>Each run is tracked for this console session. Select one to inspect its records.</p></div><button class="secondary-button" id="refresh-executions">Refresh</button></div><div class="activity-layout"><div class="panel activity-list" id="activity-list"><div class="empty">No executions yet.</div></div><div class="panel inspector" id="inspector"><div class="empty">Select an execution to inspect its request, response, and persisted records.</div></div></div></section>
+
+        <section class="view" id="view-logs"><div class="page-heading compact"><div><div class="eyebrow">CONSOLE EVENTS</div><h1>Activity logs</h1><p>Request dispatch and completion events generated by this console. This is not a container log stream.</p></div><button class="secondary-button" id="refresh-logs">Refresh</button></div><div class="panel log-panel"><div class="log-tools"><input id="log-search" placeholder="Search messages or trace IDs" aria-label="Search logs"><select id="log-level" aria-label="Log level"><option value="all">All levels</option><option value="INFO">Info</option><option value="WARN">Warn</option><option value="ERROR">Error</option></select><select id="log-source" aria-label="Log source"><option value="all">All components</option><option value="Console">Console</option></select><label class="toggle"><input type="checkbox" id="log-autoscroll" checked> Auto-scroll</label><button class="text-button" id="clear-log-view">Clear view</button></div><div class="log-table-head"><span>TIME</span><span>LEVEL</span><span>COMPONENT</span><span>MESSAGE</span><span>TRACE</span></div><div id="log-list" class="log-list"><div class="empty">No activity in this console session.</div></div></div></section>
+
+        <section class="view" id="view-system"><div class="page-heading compact"><div><div class="eyebrow">RUNTIME & TOPOLOGY</div><h1>System</h1><p>Health checks are read from each service and direct dependency probes.</p></div><button class="secondary-button" id="refresh-system">Check again</button></div><div class="section-label"><span>SERVICE HEALTH</span><span id="system-time">—</span></div><div class="status-grid full" id="system-status"></div><div class="system-columns"><div class="panel"><div class="panel-heading"><div><span class="eyebrow">MESSAGE ROUTE</span><h2>RabbitMQ</h2></div></div><div class="kv"><span>Pattern</span><strong>Request / reply</strong></div><div class="kv"><span>Exchange</span><code>payment.exchange</code></div><div class="kv"><span>Routing key</span><code>shaparak.purchase</code></div><div class="kv"><span>Queue</span><code>payment.purchase.queue</code></div><div class="kv"><span>Producer</span><strong>PSP</strong></div><div class="kv"><span>Consumer</span><strong>Shaparak</strong></div><p class="fine-print">Topology comes from application configuration. The health probe checks connectivity, not individual message delivery.</p></div><div class="panel"><div class="panel-heading"><div><span class="eyebrow">DATA STORES</span><h2>Persistence</h2></div></div><div class="kv"><span>MongoDB / psp</span><code>merchant, payment_request, payment_response</code></div><div class="kv"><span>MongoDB / shaparak</span><code>routing_request, routing_response</code></div><div class="kv"><span>MySQL / bank_a</span><code>account_a, transaction_a</code></div><div class="kv"><span>MySQL / bank_b</span><code>account_b, transaction_b</code></div><p class="fine-print">The inspector reads only records matching an execution's trace ID. Older records have no trace ID and are not displayed.</p></div></div></section>
+      </div>
+    </main>
+  </div>
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+  <script src="/app.js" defer></script>
+</body>
+</html>

@@ -12,6 +12,8 @@ import java.time.LocalDateTime;
 @Accessors(chain = true)
 public class PaymentResponse {
 
+    private String traceId;
+
     private String status;
     private String transactionDate;
     private BigDecimal amount;

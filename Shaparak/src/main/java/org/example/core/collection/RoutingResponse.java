@@ -11,6 +11,8 @@ import java.time.LocalDateTime;
 @Data
 @Accessors(chain = true)
 public class RoutingResponse {
+
+    private String traceId;
     private String status;
     private String transactionDate;
     private BigDecimal amount;

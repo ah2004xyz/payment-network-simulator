@@ -47,30 +47,34 @@ public class BankRoutingUseCase implements UseCase<BankRoutingUseCaseRequest, Ba
 
         BankModel model = switch (sourceFirstSixCardNumber) {
             case "111111" -> new Bank1Model()
+                    .setTraceId(request.getTraceId())
                     .setAmount(request.getAmount())
                     .setSourceCardNumber(request.getSourceCardNumber())
                     .setTargetAccountNumber(request.getTargetAccountNumber());
             case "222222" -> new Bank2Model()
+                    .setTraceId(request.getTraceId())
                     .setAmount(request.getAmount())
                     .setSourceCardNumber(request.getSourceCardNumber())
                     .setTargetAccountNumber(request.getTargetAccountNumber());
             default -> throw new BankNotSupportedException();
         };
         BankRoutingUseCaseResponse response = restTemplate.postForObject(api, model, BankRoutingUseCaseResponse.class);
-        responseRepository.save(responseDTOToCollection(response));
+        responseRepository.save(responseDTOToCollection(response, request.getTraceId()));
         System.out.println("end service");
         return response;
     }
 
     private RoutingRequest requestDTOToCollection(BankRoutingUseCaseRequest request){
         return new RoutingRequest()
+                .setTraceId(request.getTraceId())
                 .setAmount(request.getAmount())
                 .setSourceCardNumber(request.getSourceCardNumber())
                 .setTargetAccountNumber(request.getTargetAccountNumber());
     }
 
-    private RoutingResponse responseDTOToCollection(BankRoutingUseCaseResponse response){
+    private RoutingResponse responseDTOToCollection(BankRoutingUseCaseResponse response, String traceId){
         return new RoutingResponse()
+                .setTraceId(traceId)
                 .setAmount(response.getAmount())
                 .setStatus(response.getStatus())
                 .setTransactionDate(response.getTransactionDate());

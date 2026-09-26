@@ -62,6 +62,7 @@ Start-ServiceModule -Name 'bank-a' -Module 'BankA' -Port 8080 -JavaHome $javaHom
 Start-ServiceModule -Name 'bank-b' -Module 'BankB' -Port 8081 -JavaHome $javaHome
 Start-ServiceModule -Name 'shaparak' -Module 'Shaparak' -Port 8082 -JavaHome $javaHome
 Start-ServiceModule -Name 'psp' -Module 'PSP' -Port 8084 -JavaHome $javaHome
+Start-ServiceModule -Name 'console' -Module 'Console' -Port 8090 -JavaHome $javaHome
 
 Write-Host ''
 Write-Host "Use Get-Content -Wait '$logDirectory\\bank-b.log' to follow a service log."

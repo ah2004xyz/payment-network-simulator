@@ -1,0 +1,11 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="Developer Console" type="Application" factoryName="Application">
+    <option name="MAIN_CLASS_NAME" value="ir.bootcamp.console.ConsoleApplication" />
+    <module name="Console" />
+    <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
+    <shortenClasspath name="MANIFEST" />
+    <method v="2">
+      <option name="Make" enabled="true" />
+    </method>
+  </configuration>
+</component>

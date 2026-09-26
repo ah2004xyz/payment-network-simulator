@@ -38,6 +38,7 @@ public class BankBTransferService {
         targetAccount.setBalance(targetAccount.getBalance().add(request.getAmount()));
 
         BankBTransaction transaction = new BankBTransaction();
+        transaction.setTraceId(request.getTraceId());
         transaction.setTransactionDate(LocalDateTime.now());
         transaction.setSourceAccount(sourceAccount);
         transaction.setTargetAccount(targetAccount);

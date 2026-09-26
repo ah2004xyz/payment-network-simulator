@@ -11,6 +11,8 @@ import java.math.BigDecimal;
 @Accessors(chain = true)
 public class RoutingRequest {
 
+    private String traceId;
+
     private String sourceCardNumber;
     private String targetAccountNumber;
     private BigDecimal amount;

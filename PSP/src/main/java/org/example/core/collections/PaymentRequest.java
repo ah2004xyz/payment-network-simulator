@@ -13,6 +13,8 @@ import java.util.UUID;
 @Accessors(chain = true)
 public class PaymentRequest {
 
+    private String traceId;
+
     private String sourceCardNumber;
 
     private String merchantNumber;

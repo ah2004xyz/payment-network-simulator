@@ -11,11 +11,14 @@ Merchant
    v
 PSP :8084  -- RPC over RabbitMQ -->  Shaparak :8082  -- REST -->  Bank A :8080
    |                                      |                              |
-MongoDB                                MongoDB                          MySQL / bank
+MongoDB                                MongoDB                          MySQL / bank_a
                                                 \
                                                  -- REST --> Bank B :8081
                                                                |
                                                            MySQL / bank_b
+
+Developer Console :8090 -- fixed API proxy --> PSP / Bank A / Bank B
+                       -- read-only inspection --> MongoDB / MySQL / RabbitMQ health
 ```
 
 The PSP validates the purchase and merchant, stores the request, and sends an RPC message. Shaparak selects the bank from the card's first six digits, stores its request and response, and calls the bank. The bank locks the source account, checks the balance, transfers the amount, and records the transaction.
@@ -33,6 +36,19 @@ The PSP validates the purchase and merchant, stores the request, and sends an RP
 - MongoDB for PSP and Shaparak request/response records
 - MySQL and Spring Data JPA for bank accounts and transactions
 - Maven multi-module build
+- Local, browser-based developer console (Spring Boot with framework-free HTML/CSS/JavaScript)
+
+## Developer console
+
+Open `http://127.0.0.1:8090` after starting the services. The console is bound to loopback by default and is intended only for local development; it has no authentication. It provides:
+
+- Six editable scenarios, including the full Bank A/Bank B purchase routes, PSP validation failures, unknown merchant, and a direct insufficient-balance bank request.
+- A playground restricted to the three actual POST endpoints. Each request receives a generated trace ID.
+- HTTP request/response inspection and trace-scoped MongoDB and MySQL records. The trace ID is persisted through PSP, Shaparak, and the selected bank for new requests. Older records have no trace ID.
+- Console-generated request events, search and filtering. These are **not** the application or Docker logs. RabbitMQ topology comes from code; no per-message broker history is claimed.
+- Spring Actuator health for the four services and direct console probes for MongoDB, MySQL, and RabbitMQ.
+
+The console keeps the last 100 executions and events in memory; they disappear when it restarts. Running scenarios performs real purchases/transfers and changes local database balances. The inspector does not allow arbitrary SQL or database writes. Sample values require seeded merchant and bank accounts; edit them to match your local data.
 
 ## API documentation
 
@@ -49,7 +65,7 @@ Import `postman/Payment-Network-Simulator.postman_collection.json` into Postman 
 Requirements: JDK 17+, Maven, and Docker Compose.
 
 1. Start infrastructure with `docker compose up -d`.
-2. Start all four services from the repository root:
+2. Start all four backend services and the console from the repository root:
 
    ```powershell
    .\scripts\run-all.ps1
@@ -62,6 +78,7 @@ Requirements: JDK 17+, Maven, and Docker Compose.
    mvn -pl BankB spring-boot:run
    mvn -pl Shaparak spring-boot:run
    mvn -pl PSP spring-boot:run
+   mvn -pl Console spring-boot:run
    ```
 
 3. Add a merchant to the `psp.merchant` MongoDB collection. The document id is sent as `merchantNumber`; `accountNumber` is its destination bank account:
@@ -74,7 +91,16 @@ Requirements: JDK 17+, Maven, and Docker Compose.
    })
    ```
 
-4. Add source and destination accounts to `account_a` for Bank A or `account_b` for Bank B. See [Bank B setup](BankB/README.md) for sample Bank B accounts.
+4. Add source and destination accounts. For the console's Bank A default scenario, run this SQL in your local MySQL instance (only if these sample rows do not already exist):
+
+   ```sql
+   USE bank_a;
+   INSERT INTO account_a (card_number, account_number, balance) VALUES
+     ('1111111234567890', '111111111111', 1000000.00),
+     ('1111119999999999', '333333333333', 0.00);
+   ```
+
+   For Bank B use the sample rows in [Bank B setup](BankB/README.md). The merchant destination account must exist in the selected bank. These are real balance-changing test records; use a disposable local database.
 5. Submit a purchase:
 
    ```bash
@@ -84,6 +110,8 @@ Requirements: JDK 17+, Maven, and Docker Compose.
    ```
 
 RabbitMQ management is available at `http://localhost:15672` with local credentials `guest` / `guest`.
+
+The service ports are Bank A `8080`, Bank B `8081`, Shaparak `8082`, PSP `8084`, and Console `8090`. Docker publishes MySQL `3306`, MongoDB `27017`, RabbitMQ `5672`, and RabbitMQ management `15672`. The console's host, port, service URLs, and database connections can be overridden with the `CONSOLE_*` variables in [Console application properties](Console/src/main/resources/application.properties).
 
 ## Configuration
 

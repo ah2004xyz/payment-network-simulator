@@ -43,6 +43,7 @@ public class BankATransferService {
             throw new NotEnoughBalance(WordConstants.SOURCE);
         }
         TransactionAEntity transaction = new TransactionAEntity()
+                .setTraceId(request.getTraceId())
                 .setTransactionDate(LocalDateTime.now())
                 .setStatus(TransactionStatus.FAILED)
                 .setSourceAccount(sourceAccount)

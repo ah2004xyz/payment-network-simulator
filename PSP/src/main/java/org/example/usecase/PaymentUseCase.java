@@ -15,6 +15,7 @@ import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -27,12 +28,16 @@ public class PaymentUseCase implements UseCase<PaymentUseCaseRequest, PaymentUse
 
     @Override
     public PaymentUseCaseResponse execute(PaymentUseCaseRequest request) {
+        if (request.getTraceId() == null || request.getTraceId().isBlank()) {
+            request.setTraceId(UUID.randomUUID().toString());
+        }
         System.out.println("first service");
         requestRepository.save(requestDTOToCollection(request));
 
         Optional<Merchant> merchant = merchantRepository.findById(request.getMerchantNumber());
         if (merchant.isEmpty()) throw new MerchantNotSupportedException();
         PaymentModel model = new PaymentModel()
+                .setTraceId(request.getTraceId())
                 .setAmount(request.getAmount())
                 .setTargetAccountNumber(merchant.get().getAccountNumber())
                 .setSourceCardNumber(request.getSourceCardNumber());
@@ -46,20 +51,22 @@ public class PaymentUseCase implements UseCase<PaymentUseCaseRequest, PaymentUse
             throw new IllegalStateException("No response received from Shaparak");
         }
 
-        responseRepository.save(responseDTOToCollection(response));
+        responseRepository.save(responseDTOToCollection(response, request.getTraceId()));
         System.out.println("end service");
         return response;
     }
 
     private PaymentRequest requestDTOToCollection(PaymentUseCaseRequest request){
         return new PaymentRequest()
+                .setTraceId(request.getTraceId())
                 .setAmount(request.getAmount())
                 .setMerchantNumber(request.getMerchantNumber())
                 .setSourceCardNumber(request.getSourceCardNumber());
     }
 
-    private PaymentResponse responseDTOToCollection(PaymentUseCaseResponse response){
+    private PaymentResponse responseDTOToCollection(PaymentUseCaseResponse response, String traceId){
         return new PaymentResponse()
+                .setTraceId(traceId)
                 .setAmount(response.getAmount())
                 .setStatus(response.getStatus())
                 .setTransactionDate(response.getTransactionDate());
