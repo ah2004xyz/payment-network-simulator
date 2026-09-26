@@ -1,0 +1,80 @@
+{
+  "info": {
+    "_postman_id": "9a0aa590-6dbd-4f4e-b641-8c472a045641",
+    "name": "Payment Network Simulator",
+    "description": "Requests for the PSP, Bank A, and Bank B APIs.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    { "key": "pspBaseUrl", "value": "http://localhost:8084" },
+    { "key": "bankABaseUrl", "value": "http://localhost:8080/bank" },
+    { "key": "bankBBaseUrl", "value": "http://localhost:8081/bank" },
+    { "key": "bankAMerchantId", "value": "replace-with-bank-a-merchant" },
+    { "key": "bankBMerchantId", "value": "merchant-bank-b" }
+  ],
+  "item": [
+    {
+      "name": "PSP",
+      "item": [
+        {
+          "name": "Purchase with Bank A card",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"sourceCardNumber\": \"1111111234567890\",\n  \"merchantNumber\": \"{{bankAMerchantId}}\",\n  \"amount\": 25000\n}"
+            },
+            "url": "{{pspBaseUrl}}/payment/purchase"
+          }
+        },
+        {
+          "name": "Purchase with Bank B card",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"sourceCardNumber\": \"2222221234567890\",\n  \"merchantNumber\": \"{{bankBMerchantId}}\",\n  \"amount\": 25000\n}"
+            },
+            "url": "{{pspBaseUrl}}/payment/purchase"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Bank A",
+      "item": [
+        {
+          "name": "Direct transfer",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"sourceCardNumber\": \"1111111234567890\",\n  \"targetAccountNumber\": \"replace-with-bank-a-account\",\n  \"amount\": 25000\n}"
+            },
+            "url": "{{bankABaseUrl}}/bank1"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Bank B",
+      "item": [
+        {
+          "name": "Direct transfer",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"sourceCardNumber\": \"2222221234567890\",\n  \"targetAccountNumber\": \"333333333333\",\n  \"amount\": 25000\n}"
+            },
+            "url": "{{bankBBaseUrl}}/bank2"
+          }
+        }
+      ]
+    }
+  ]
+}

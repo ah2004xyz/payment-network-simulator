@@ -20,4 +20,5 @@ Thumbs.db
 ### Local configuration and secrets
 .env
 application-local.properties
-
+.logs/
+.local-backups/

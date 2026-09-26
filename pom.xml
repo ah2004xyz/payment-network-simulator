@@ -16,13 +16,14 @@
     <name>Payment Network Simulator</name>
     <description>Three-service payment flow simulator for PSP, Shaparak, and bank systems</description>
     <modules>
-        <module>Bank</module>
+        <module>BankA</module>
+        <module>BankB</module>
         <module>Shaparak</module>
         <module>PSP</module>
     </modules>
     <properties>
         <java.version>17</java.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <springdoc.version>2.8.13</springdoc.version>
     </properties>
 </project>
-

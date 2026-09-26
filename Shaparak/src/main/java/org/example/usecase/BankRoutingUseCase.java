@@ -24,8 +24,11 @@ public class BankRoutingUseCase implements UseCase<BankRoutingUseCaseRequest, Ba
     private final RoutingRequestRepository requestRepository;
     private final RoutingResponseRepository responseRepository;
 
-    @Value("${bank.base-url:http://localhost:8080/bank}")
-    private String bankBaseUrl;
+    @Value("${bank.a.base-url:http://localhost:8080/bank}")
+    private String bankABaseUrl;
+
+    @Value("${bank.b.base-url:http://localhost:8081/bank}")
+    private String bankBBaseUrl;
 
 
     @Override
@@ -35,8 +38,8 @@ public class BankRoutingUseCase implements UseCase<BankRoutingUseCaseRequest, Ba
         String sourceFirstSixCardNumber = request.getSourceCardNumber().substring(0, 6);
 
         Map<String, String> banks = Map.of(
-                "111111", bankBaseUrl + "/bank1",
-                "222222", bankBaseUrl + "/bank2"
+                "111111", bankABaseUrl + "/bank1",
+                "222222", bankBBaseUrl + "/bank2"
         );
 
         String api = banks.getOrDefault(sourceFirstSixCardNumber, null);

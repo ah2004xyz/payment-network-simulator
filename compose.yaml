@@ -2,7 +2,7 @@ services:
   mysql:
     image: mysql:8.4
     environment:
-      MYSQL_DATABASE: bank
+      MYSQL_DATABASE: bank_a
       MYSQL_ROOT_PASSWORD: root
     ports:
       - "3306:3306"
@@ -32,4 +32,3 @@ services:
 volumes:
   mysql-data:
   mongo-data:
-
